@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GYM KRATOS</string>
+    <string-array name="opciones_inscripcion">
+        <item>Tipo de inscripción...</item>
+        <item>Mensualidad Normal</item>
+        <item>Plan Personalizado</item>
+    </string-array>
+</resources>
