@@ -1,128 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#000000"
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tvTituloRegistro"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="📝 NUEVO INGRESO"
-        android:textColor="#FFFFFF"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/inputNombre"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="32dp"
-        android:background="#FFFFFF"
-        android:hint="Nombre del cliente"
-        android:paddingHorizontal="16dp"
-        android:textColor="#000000"
-        android:textColorHint="#555555"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro" />
-
-    <EditText
-        android:id="@+id/inputTelefono"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        android:background="#FFFFFF"
-        android:hint="Teléfono (ej: +56912345678)"
-        android:inputType="phone"
-        android:paddingHorizontal="16dp"
-        android:textColor="#000000"
-        android:textColorHint="#555555"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputNombre" />
-
-    <Spinner
-        android:id="@+id/spinnerDisciplina"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        android:background="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputTelefono" />
-
-    <!-- CAJA INVISIBLE QUE CONTIENE LAS DOS OPCIONES DE PRECIO -->
-    <FrameLayout
-        android:id="@+id/contenedorPrecios"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerDisciplina">
-
-        <!-- Opción A: El Spinner automático -->
-        <Spinner
-            android:id="@+id/spinnerMonto"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="#DDDDDD" />
-
-        <!-- Opción B: El campo manual (Oculto por defecto) -->
-        <EditText
-            android:id="@+id/inputMontoEspecial"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="#FFFFFF"
-            android:hint="Ingresa el precio acordado..."
-            android:inputType="number"
-            android:paddingHorizontal="16dp"
-            android:textColor="#000000"
-            android:textColorHint="#555555"
+            android:layout_height="wrap_content"
+            android:text="NUEVO CLIENTE"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:visibility="gone" />
-    </FrameLayout>
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="32dp"/>
 
-    <Button
-        android:id="@+id/btnGuardar"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="24dp"
-        android:text="GUARDAR CLIENTE"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:backgroundTint="#B71C1C"
-        app:cornerRadius="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contenedorPrecios" />
+        <!-- EL INTERRUPTOR MÁGICO (Oculto por defecto, Java lo mostrará si es Rafa/Nico) -->
+        <Switch
+            android:id="@+id/switchDestino"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Modo: Mi Lista (Personalizado)"
+            android:textColor="#B71C1C"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginBottom="24dp"
+            android:thumbTint="#FFFFFF"
+            android:trackTint="#424242"/>
 
-    <Button
-        android:id="@+id/btnVolver"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:background="@android:color/transparent"
-        android:text="⬅ Volver al Menú"
-        android:textColor="#90CAF9"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <EditText
+            android:id="@+id/inputNombre"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="Nombre y Apellido"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#B71C1C"
+            android:layout_marginBottom="16dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/inputTelefono"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="Teléfono (+569...)"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#B71C1C"
+            android:inputType="phone"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disciplinas:"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Este es el grupo que se ocultará para Rafa y Nico -->
+        <LinearLayout
+            android:id="@+id/grupoDisciplinasGenerales"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/cbKickboxing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kickboxing"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#B71C1C"/>
+
+            <CheckBox
+                android:id="@+id/cbBoxeo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Boxeo"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#B71C1C"/>
+
+            <CheckBox
+                android:id="@+id/cbJiujitsu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Jiujitsu"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#B71C1C"/>
+
+            <CheckBox
+                android:id="@+id/cbGym"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gym (Pesas)"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#B71C1C"/>
+
+            <CheckBox
+                android:id="@+id/cbPlanEspecial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Plan Especial"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#B71C1C" />
+        </LinearLayout>
+
+        <!-- Personalizado siempre queda visible -->
+        <CheckBox
+            android:id="@+id/cbPersonalizado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Personalizado"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Valor de la Mensualidad ($):"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/inputMontoUnico"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="Ej: 35000"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#B71C1C"
+            android:inputType="number"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="💾 GUARDAR CLIENTE"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:backgroundTint="#B71C1C"
+            app:cornerRadius="4dp"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnVolver"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="VOLVER AL MENÚ"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:backgroundTint="#424242"
+            app:cornerRadius="4dp"
+            android:layout_marginBottom="32dp"/>
+
+    </LinearLayout>
+</ScrollView>

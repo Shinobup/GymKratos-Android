@@ -2,15 +2,13 @@ package com.example.gymkratos;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +18,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -30,22 +29,12 @@ import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class AvisosActivity extends AppCompatActivity {
 
-    private Spinner spinnerClientes;
-    private ArrayList<String> listaNombres;
-    private ArrayAdapter<String> adaptador;
-
-    private HashMap<String, String> mapaTelefonos;
-    private HashMap<String, String> mapaVencimientos;
-
-    // SEGURIDAD: Enlace oculto para GitHub
-    private String urlAPI = "URL_PRIVADA_POR_SEGURIDAD";
+    private String profeActual = "Paulo";
+    String urlAPI = "PONER_AQUI_TU_ENLACE_DE_GOOGLE_APPS_SCRIPT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,157 +48,163 @@ public class AvisosActivity extends AppCompatActivity {
             return insets;
         });
 
-        spinnerClientes = findViewById(R.id.spinnerClientesAvisos);
-        EditText inputMensaje = findViewById(R.id.inputMensajeWsp);
-        Button btnEnviar = findViewById(R.id.btnEnviarWsp);
-        Button btnVolver = findViewById(R.id.btnVolverAvisos);
+        // Recibir quién abrió la pantalla
+        profeActual = getIntent().getStringExtra("PROFE_ACTUAL");
+        if (profeActual == null) profeActual = "Paulo";
 
-        listaNombres = new ArrayList<>();
-        mapaTelefonos = new HashMap<>();
-        mapaVencimientos = new HashMap<>();
-
-        listaNombres.add("Cargando clientes...");
-        adaptador = new ArrayAdapter<>(this, R.layout.molde_spinner, listaNombres);
-        spinnerClientes.setAdapter(adaptador);
-
-        cargarClientesParaWsp();
-
-        spinnerClientes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String nombreElegido = listaNombres.get(position);
-                if (!nombreElegido.contains("Selecciona") && !nombreElegido.contains("Cargando")) {
-
-                    String fechaVencimiento = mapaVencimientos.getOrDefault(nombreElegido, "fecha desconocida");
-
-                    String mensajeAuto = "¡Hola " + nombreElegido + "! Te escribimos de Gym Kratos. Tu membresía venció el "
-                            + fechaVencimiento + ". ¡Te esperamos para renovar y seguir entrenando con todo!";
-                    inputMensaje.setText(mensajeAuto);
-                } else {
-                    inputMensaje.setText("");
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        btnEnviar.setOnClickListener(v -> {
-            String clienteElegido = spinnerClientes.getSelectedItem().toString();
-            String mensaje = inputMensaje.getText().toString();
-
-            if (clienteElegido.contains("Selecciona") || clienteElegido.contains("Cargando")) {
-                Toast.makeText(this, "Selecciona un cliente primero", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (mensaje.isEmpty()) {
-                Toast.makeText(this, "Escribe un mensaje", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String telefonoStr = mapaTelefonos.get(clienteElegido);
-
-            if (telefonoStr != null) {
-                telefonoStr = telefonoStr.replace("+", "");
-                try {
-                    String link = "https://api.whatsapp.com/send?phone=" + telefonoStr + "&text=" + URLEncoder.encode(mensaje, "UTF-8");
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(link));
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Toast.makeText(this, "Error al abrir WhatsApp", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+        Button btnVolver = findViewById(R.id.btnVolverDesdeAvisos);
         btnVolver.setOnClickListener(v -> finish());
+
+        buscarClientesPorVencer();
     }
 
-    private void cargarClientesParaWsp() {
-        LinearLayout contenedorVencidos = findViewById(R.id.contenedorVencidosAvisos);
+    private void buscarClientesPorVencer() {
+        TextView tvEstado = findViewById(R.id.tvEstadoAvisos);
+        LinearLayout contenedor = findViewById(R.id.contenedorAvisos);
 
         StringRequest peticionGet = new StringRequest(Request.Method.GET, urlAPI,
                 response -> {
                     try {
-                        listaNombres.clear();
-                        mapaTelefonos.clear();
-                        mapaVencimientos.clear();
-                        contenedorVencidos.removeAllViews();
-                        listaNombres.add("Selecciona un cliente...");
+                        tvEstado.setVisibility(View.GONE);
+                        contenedor.removeAllViews();
 
                         JSONArray jsonArray = new JSONArray(response);
                         SimpleDateFormat sdfGoogle = new SimpleDateFormat("yyyy-MM-dd");
 
+                        boolean esAdmin = profeActual.equalsIgnoreCase("Paulo");
+                        int contadorAvisos = 0;
+
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject cliente = jsonArray.getJSONObject(i);
+
+                            // FILTRO DE PRIVACIDAD
+                            String profesorCliente = cliente.optString("profesor", "Paulo");
+                            if (!esAdmin && !profesorCliente.equalsIgnoreCase(profeActual)) {
+                                continue;
+                            }
+
                             String nombre = cliente.getString("nombre");
                             String telefono = cliente.getString("telefono");
+                            String disciplina = cliente.getString("disciplina");
                             String fechaCruda = cliente.getString("fecha");
-
-                            listaNombres.add(nombre);
-                            mapaTelefonos.put(nombre, telefono);
 
                             if (fechaCruda.contains("T")) {
                                 String soloFecha = fechaCruda.split("T")[0];
                                 Date fechaPago = sdfGoogle.parse(soloFecha);
-
-                                Calendar calendario = Calendar.getInstance();
-                                calendario.setTime(fechaPago);
-                                calendario.add(Calendar.DAY_OF_YEAR, 30);
-                                String fechaExactaVencimiento = sdfGoogle.format(calendario.getTime());
-
-                                mapaVencimientos.put(nombre, fechaExactaVencimiento);
-
                                 Date hoy = new Date();
+
                                 long diferenciaMilisegundos = hoy.getTime() - fechaPago.getTime();
                                 long diasPasados = diferenciaMilisegundos / (1000 * 60 * 60 * 24);
 
-                                if (diasPasados >= 30) {
-                                    crearTarjetaVencido(contenedorVencidos, nombre, diasPasados);
+                                // Si pasaron 25 días o más (faltan 5 días para cumplir el mes, o ya debe)
+                                if (diasPasados >= 25) {
+                                    contadorAvisos++;
+                                    crearTarjetaAviso(contenedor, nombre, telefono, disciplina, diasPasados);
                                 }
                             }
                         }
 
-                        adaptador.notifyDataSetChanged();
-
-                        if (contenedorVencidos.getChildCount() == 0) {
-                            TextView tvCero = new TextView(this);
-                            tvCero.setText("✅ Nadie está atrasado con sus pagos.");
-                            tvCero.setTextColor(Color.GREEN);
-                            contenedorVencidos.addView(tvCero);
+                        if (contadorAvisos == 0) {
+                            tvEstado.setText("✅ Todos tus clientes están al día (menos de 25 días).");
+                            tvEstado.setTextColor(Color.GREEN);
+                            tvEstado.setVisibility(View.VISIBLE);
                         }
 
                     } catch (Exception e) {
-                        Toast.makeText(AvisosActivity.this, "Error procesando clientes", Toast.LENGTH_SHORT).show();
+                        tvEstado.setText("❌ Error al procesar los datos.");
+                        tvEstado.setTextColor(Color.RED);
+                        tvEstado.setVisibility(View.VISIBLE);
                     }
                 },
-                error -> Toast.makeText(AvisosActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show());
+                error -> {
+                    tvEstado.setText("❌ Error de conexión. Revisa tu internet.");
+                    tvEstado.setTextColor(Color.RED);
+                    tvEstado.setVisibility(View.VISIBLE);
+                });
+
+        // Tolerancia de 15 segundos
+        peticionGet.setRetryPolicy(new DefaultRetryPolicy(
+                15000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         RequestQueue cola = Volley.newRequestQueue(this);
         cola.add(peticionGet);
     }
 
-    private void crearTarjetaVencido(LinearLayout contenedor, String nombre, long diasPasados) {
-        TextView tarjeta = new TextView(this);
-        tarjeta.setText("❌ " + nombre + "\n(Vencido hace " + (diasPasados - 30) + " días)");
-        tarjeta.setTextColor(Color.WHITE);
-        tarjeta.setBackgroundColor(Color.parseColor("#420000"));
-        tarjeta.setPadding(30, 20, 30, 20);
-        tarjeta.setTextSize(16);
+    private void crearTarjetaAviso(LinearLayout contenedor, String nombre, String telefono, String disciplina, long diasPasados) {
+        // Contenedor principal de la tarjeta
+        LinearLayout tarjeta = new LinearLayout(this);
+        tarjeta.setOrientation(LinearLayout.VERTICAL);
+        tarjeta.setPadding(50, 40, 50, 40);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+        // Fondo oscuro con borde rojo
+        GradientDrawable fondoTarjeta = new GradientDrawable();
+        fondoTarjeta.setColor(Color.parseColor("#111111"));
+        fondoTarjeta.setCornerRadius(24f);
+        fondoTarjeta.setStroke(3, Color.parseColor("#B71C1C"));
+        tarjeta.setBackground(fondoTarjeta);
+
+        LinearLayout.LayoutParams paramsTarjeta = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 16);
-        tarjeta.setLayoutParams(params);
+        paramsTarjeta.setMargins(0, 0, 0, 32);
+        tarjeta.setLayoutParams(paramsTarjeta);
 
-        tarjeta.setOnClickListener(v -> {
-            int posicion = adaptador.getPosition(nombre);
-            if(posicion >= 0) {
-                spinnerClientes.setSelection(posicion);
-                Toast.makeText(this, "Cliente seleccionado para cobrar ☝️", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Texto Nombre
+        TextView tvNombre = new TextView(this);
+        tvNombre.setText(nombre.toUpperCase());
+        tvNombre.setTextColor(Color.WHITE);
+        tvNombre.setTextSize(18);
+        tvNombre.setTypeface(null, Typeface.BOLD);
 
+        // Texto Estado (Rojo si ya venció, Amarillo si está por vencer)
+        TextView tvEstado = new TextView(this);
+        long diasParaVencer = 30 - diasPasados;
+        if (diasParaVencer <= 0) {
+            tvEstado.setText("⚠️ Vencido hace " + Math.abs(diasParaVencer) + " días");
+            tvEstado.setTextColor(Color.parseColor("#E53935")); // Rojo
+        } else {
+            tvEstado.setText("⏳ Vence en " + diasParaVencer + " días");
+            tvEstado.setTextColor(Color.parseColor("#FDD835")); // Amarillo
+        }
+        tvEstado.setTextSize(14);
+        tvEstado.setPadding(0, 8, 0, 24);
+
+        // Botón Enviar WhatsApp
+        Button btnWhatsApp = new Button(this);
+        btnWhatsApp.setText("📲 ENVIAR WHATSAPP");
+        btnWhatsApp.setTextColor(Color.WHITE);
+        btnWhatsApp.setBackgroundColor(Color.parseColor("#25D366")); // Verde WhatsApp oficial
+        btnWhatsApp.setOnClickListener(v -> abrirWhatsApp(telefono, nombre, disciplina, diasParaVencer));
+
+        tarjeta.addView(tvNombre);
+        tarjeta.addView(tvEstado);
+        tarjeta.addView(btnWhatsApp);
         contenedor.addView(tarjeta);
+    }
+
+    private void abrirWhatsApp(String telefonoCrudo, String nombre, String disciplina, long diasParaVencer) {
+        try {
+            // Limpiamos el número para que sea formato internacional puro: 569...
+            String numeroLimpio = telefonoCrudo.replace("+", "").replace(" ", "").trim();
+
+            // Mensaje automático personalizado
+            String mensaje = "Hola " + nombre + " 🥊,\nTe escribimos de Gym Kratos. ";
+
+            if (diasParaVencer <= 0) {
+                mensaje += "Queríamos recordarte que tu mensualidad de " + disciplina + " ha vencido. ¡Te esperamos para renovar y seguir entrenando duro! 💪🔥";
+            } else {
+                mensaje += "Queríamos recordarte que tu mensualidad de " + disciplina + " vence en " + diasParaVencer + " días. ¡Nos vemos en el entrenamiento! 💪🔥";
+            }
+
+            // Crear el link de WhatsApp
+            String url = "https://wa.me/" + numeroLimpio + "?text=" + URLEncoder.encode(mensaje, "UTF-8");
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            startActivity(intent);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al abrir WhatsApp", Toast.LENGTH_SHORT).show();
+        }
     }
 }

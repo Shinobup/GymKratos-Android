@@ -31,6 +31,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTituloFinanzas" />
 
+    <Button
+        android:id="@+id/btnReconectarFinanzas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="🔄 REINTENTAR CONEXIÓN"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:backgroundTint="#1976D2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEstadoCarga" />
+
     <!-- EL GRAN TOTAL -->
     <LinearLayout
         android:id="@+id/cajaTotal"
@@ -44,7 +58,7 @@
         android:padding="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEstadoCarga">
+        app:layout_constraintTop_toBottomOf="@+id/btnReconectarFinanzas">
 
         <TextView
             android:layout_width="wrap_content"

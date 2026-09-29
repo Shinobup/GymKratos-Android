@@ -1,121 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#000000"
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tvTituloRenovar"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="🔄 RENOVAR MEMBRESÍA"
-        android:textColor="#FFFFFF"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <!-- CLIENTE -->
-    <Spinner
-        android:id="@+id/spinnerClientesRenovar"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="24dp"
-        android:background="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloRenovar" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RENOVAR MEMBRESÍA"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"
+            android:layout_marginTop="32dp"/>
 
-    <!-- NUEVO: DISCIPLINA -->
-    <Spinner
-        android:id="@+id/spinnerDisciplinaRenovar"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        android:background="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerClientesRenovar" />
-
-    <!-- NUEVO: MONTO AUTOMÁTICO -->
-    <Spinner
-        android:id="@+id/spinnerMontoRenovar"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        android:background="#DDDDDD"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerDisciplinaRenovar" />
-
-    <Button
-        android:id="@+id/btnRenovarAccion"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="24dp"
-        android:text="CONFIRMAR RENOVACIÓN"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        app:backgroundTint="#B71C1C"
-        app:cornerRadius="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerMontoRenovar" />
-
-    <!-- TÍTULO VENCIDOS -->
-    <TextView
-        android:id="@+id/tvTituloVencidos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="⚠️ MEMBRESÍAS AGOTADAS"
-        android:textColor="#FF5252"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnRenovarAccion" />
-
-    <!-- LISTA VENCIDOS -->
-    <ScrollView
-        android:id="@+id/scrollVencidos"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:background="#111111"
-        android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnVolverDesdeRenovar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloVencidos">
+        <!-- Contenedor para mostrar los clientes vencidos -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Avisos de Vencimiento:"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
 
         <LinearLayout
             android:id="@+id/contenedorVencidos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnVolverDesdeRenovar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:text="⬅ Volver al Menú"
-        android:textColor="#90CAF9"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <!-- Selector del cliente a renovar -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selecciona Cliente a Renovar:"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Spinner
+            android:id="@+id/spinnerClientesRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:backgroundTint="#B71C1C"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nuevas Disciplinas (Puedes elegir varias):"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Grupo de CheckBoxes -->
+        <CheckBox
+            android:id="@+id/cbKickboxingRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kickboxing"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"/>
+
+        <CheckBox
+            android:id="@+id/cbBoxeoRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Boxeo"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"/>
+
+        <CheckBox
+            android:id="@+id/cbJiujitsuRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jiujitsu"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"/>
+
+        <CheckBox
+            android:id="@+id/cbGymRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gym (Pesas)"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"/>
+
+        <CheckBox
+            android:id="@+id/cbPersonalizadoRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Personalizado"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"/>
+
+        <CheckBox
+            android:id="@+id/cbPlanEspecialRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Plan Especial"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#B71C1C"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Valor de la Mensualidad ($):"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/inputMontoUnicoRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="Ej: 35000"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#B71C1C"
+            android:inputType="number"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnRenovarAccion"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="🔄 RENOVAR MEMBRESÍA"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:backgroundTint="#B71C1C"
+            app:cornerRadius="4dp"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnVolverDesdeRenovar"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="VOLVER AL MENÚ"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:backgroundTint="#424242"
+            app:cornerRadius="4dp"
+            android:layout_marginBottom="32dp"/>
+
+    </LinearLayout>
+</ScrollView>

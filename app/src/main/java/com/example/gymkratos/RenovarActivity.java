@@ -2,10 +2,11 @@ package com.example.gymkratos;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
+import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -36,16 +38,14 @@ import java.util.Map;
 public class RenovarActivity extends AppCompatActivity {
 
     private Spinner spinnerClientes;
-    private Spinner spinnerDisciplina;
-    private Spinner spinnerMonto;
+    private CheckBox cbKickboxing, cbBoxeo, cbJiujitsu, cbGym, cbPersonalizado, cbPlanEspecial;
+    private EditText inputMontoUnico;
 
     private ArrayList<String> listaNombresClientes;
     private ArrayAdapter<String> adapterClientes;
 
-    private ArrayAdapter<String> adaptadorMontos;
-    private List<String> listaMontos;
-
-    private String urlAPI = "https://script.google.com/macros/s/AKfycbxDV4ogyyFwqsUNrvhoy7O0gTJgpZTFx6_Rn3N4WIMEMgWLKkI10AimFQdPgBfQCI7o/exec";
+    String urlAPI = "PONER_AQUI_TU_ENLACE_DE_GOOGLE_APPS_SCRIPT";
+    private String profeActual = "Paulo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,80 +59,64 @@ public class RenovarActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 1. CONFIGURAR SPINNER DE CLIENTES
+        // Recibir quién abrió la pantalla
+        profeActual = getIntent().getStringExtra("PROFE_ACTUAL");
+        if (profeActual == null) profeActual = "Paulo";
+
+        // Enlazar vistas de diseño
         spinnerClientes = findViewById(R.id.spinnerClientesRenovar);
+        cbKickboxing = findViewById(R.id.cbKickboxingRenovar);
+        cbBoxeo = findViewById(R.id.cbBoxeoRenovar);
+        cbJiujitsu = findViewById(R.id.cbJiujitsuRenovar);
+        cbGym = findViewById(R.id.cbGymRenovar);
+        cbPersonalizado = findViewById(R.id.cbPersonalizadoRenovar);
+        cbPlanEspecial = findViewById(R.id.cbPlanEspecialRenovar);
+        inputMontoUnico = findViewById(R.id.inputMontoUnicoRenovar);
+
+        // Configurar Spinner de clientes
         listaNombresClientes = new ArrayList<>();
         listaNombresClientes.add("Cargando clientes...");
         adapterClientes = new ArrayAdapter<>(this, R.layout.molde_spinner, listaNombresClientes);
         spinnerClientes.setAdapter(adapterClientes);
 
-        // 2. CONFIGURAR SPINNER DE DISCIPLINAS
-        spinnerDisciplina = findViewById(R.id.spinnerDisciplinaRenovar);
-        String[] disciplinas = {"Selecciona nueva disciplina...", "Kickboxing", "Boxeo", "Jiujitsu", "Gym", "Personalizado"};
-        ArrayAdapter<String> adaptadorDisciplinas = new ArrayAdapter<>(this, R.layout.molde_spinner, disciplinas);
-        spinnerDisciplina.setAdapter(adaptadorDisciplinas);
-
-        // 3. CONFIGURAR SPINNER DE MONTOS (EN CASCADA)
-        spinnerMonto = findViewById(R.id.spinnerMontoRenovar);
-        listaMontos = new ArrayList<>();
-        listaMontos.add("Elige primero la disciplina...");
-        adaptadorMontos = new ArrayAdapter<>(this, R.layout.molde_spinner, listaMontos);
-        spinnerMonto.setAdapter(adaptadorMontos);
-
-        spinnerDisciplina.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String seleccion = disciplinas[position];
-                listaMontos.clear();
-
-                switch (seleccion) {
-                    case "Kickboxing":
-                    case "Jiujitsu":
-                        listaMontos.add("35000");
-                        break;
-                    case "Boxeo":
-                        listaMontos.add("30000");
-                        break;
-                    case "Gym":
-                        listaMontos.add("30000");
-                        listaMontos.add("35000");
-                        break;
-                    case "Personalizado":
-                        listaMontos.add("70000");
-                        listaMontos.add("90000");
-                        listaMontos.add("110000");
-                        break;
-                    default:
-                        listaMontos.add("Elige primero la disciplina...");
-                        break;
-                }
-                adaptadorMontos.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        // Cargar clientes desde Google
         obtenerClientesYCalcularVencimientos();
 
-        // 4. BOTONES DE ACCIÓN
         Button botonRenovar = findViewById(R.id.btnRenovarAccion);
         Button botonVolver = findViewById(R.id.btnVolverDesdeRenovar);
 
-        botonRenovar.setOnClickListener(v -> {
-            String cliente = spinnerClientes.getSelectedItem().toString();
-            String disciplina = spinnerDisciplina.getSelectedItem().toString();
-            String monto = spinnerMonto.getSelectedItem().toString();
-
-            if (cliente.contains("Cargando") || cliente.contains("Selecciona") || disciplina.contains("Selecciona") || monto.contains("Elige")) {
-                Toast.makeText(RenovarActivity.this, "Por favor selecciona cliente, disciplina y precio", Toast.LENGTH_SHORT).show();
-            } else {
-                renovarClienteEnGoogle(cliente, disciplina, monto);
-            }
-        });
-
+        botonRenovar.setOnClickListener(v -> renovarCliente());
         botonVolver.setOnClickListener(v -> finish());
+    }
+
+    private void renovarCliente() {
+        String cliente = spinnerClientes.getSelectedItem().toString();
+        String montoFinal = inputMontoUnico.getText().toString().trim();
+
+        // Recopilar disciplinas marcadas
+        List<String> disciplinasMarcadas = new ArrayList<>();
+        if (cbKickboxing.isChecked()) disciplinasMarcadas.add("Kickboxing");
+        if (cbBoxeo.isChecked()) disciplinasMarcadas.add("Boxeo");
+        if (cbJiujitsu.isChecked()) disciplinasMarcadas.add("Jiujitsu");
+        if (cbGym.isChecked()) disciplinasMarcadas.add("Gym");
+        if (cbPersonalizado.isChecked()) disciplinasMarcadas.add("Personalizado");
+        if (cbPlanEspecial.isChecked()) disciplinasMarcadas.add("Plan Especial");
+
+        // Validaciones
+        if (cliente.contains("Cargando") || cliente.contains("Selecciona")) {
+            Toast.makeText(this, "Por favor selecciona un cliente de la lista", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (disciplinasMarcadas.isEmpty()) {
+            Toast.makeText(this, "¡Debes seleccionar al menos una disciplina!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (montoFinal.isEmpty()) {
+            Toast.makeText(this, "¡Falta ingresar el valor de la renovación!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String disciplinaFinal = TextUtils.join(" + ", disciplinasMarcadas);
+        renovarClienteEnGoogle(cliente, disciplinaFinal, montoFinal);
     }
 
     private void obtenerClientesYCalcularVencimientos() {
@@ -147,9 +131,17 @@ public class RenovarActivity extends AppCompatActivity {
 
                         JSONArray jsonArray = new JSONArray(response);
                         SimpleDateFormat sdfGoogle = new SimpleDateFormat("yyyy-MM-dd");
+                        boolean esAdmin = profeActual.equalsIgnoreCase("Paulo");
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject cliente = jsonArray.getJSONObject(i);
+
+                            // FILTRO DE PRIVACIDAD
+                            String profesorCliente = cliente.optString("profesor", "Paulo");
+                            if (!esAdmin && !profesorCliente.equalsIgnoreCase(profeActual)) {
+                                continue;
+                            }
+
                             String nombre = cliente.getString("nombre");
                             String fechaCruda = cliente.getString("fecha");
 
@@ -172,7 +164,7 @@ public class RenovarActivity extends AppCompatActivity {
 
                         if (contenedorVencidos.getChildCount() == 0) {
                             TextView tvCero = new TextView(this);
-                            tvCero.setText("✅ Todos los clientes están al día.");
+                            tvCero.setText("✅ Todos tus clientes están al día.");
                             tvCero.setTextColor(Color.GREEN);
                             contenedorVencidos.addView(tvCero);
                         }
@@ -183,6 +175,9 @@ public class RenovarActivity extends AppCompatActivity {
                 },
                 error -> Toast.makeText(RenovarActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show());
 
+        peticionGet.setRetryPolicy(new DefaultRetryPolicy(
+                15000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue cola = Volley.newRequestQueue(this);
         cola.add(peticionGet);
     }
@@ -207,7 +202,6 @@ public class RenovarActivity extends AppCompatActivity {
                 Toast.makeText(this, "Cliente seleccionado arriba ☝️", Toast.LENGTH_SHORT).show();
             }
         });
-
         contenedor.addView(tarjeta);
     }
 
@@ -229,10 +223,14 @@ public class RenovarActivity extends AppCompatActivity {
                 params.put("fecha", fechaActual);
                 params.put("disciplina", disciplina);
                 params.put("monto", monto);
+                params.put("profesor", profeActual);
                 return params;
             }
         };
 
+        peticionPost.setRetryPolicy(new DefaultRetryPolicy(
+                15000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue cola = Volley.newRequestQueue(this);
         cola.add(peticionPost);
     }

@@ -108,5 +108,17 @@
             app:backgroundTint="#F57C00"
             app:cornerRadius="4dp" />
 
+
+        <!-- NUEVO Botón 7: Volver / Cerrar Sesión -->
+        <Button
+            android:id="@+id/idCerrarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="🚪 CERRAR SESIÓN / VOLVER"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:backgroundTint="#424242"
+            app:cornerRadius="4dp"
+            android:layout_marginTop="24dp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,9 @@ package com.example.gymkratos;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +13,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String profeActual = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,46 +28,66 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 1. Enlazamos los botones
-        Button botonRegistrar = findViewById(R.id.idRegistrar);
-        Button botonVer = findViewById(R.id.idVer);
-        Button botonRenovar = findViewById(R.id.idRenovar);
-        Button botonEliminar = findViewById(R.id.idEliminar);
-        Button botonAvisos = findViewById(R.id.idAvisos);
+        // 1. Recibir quién inició sesión desde el Login
+        profeActual = getIntent().getStringExtra("PROFE_ACTUAL");
+        if (profeActual == null) profeActual = "Invitado";
 
-        // ¡NUEVO ENLACE AL BOTÓN DE FINANZAS!
-        Button botonFinanzas = findViewById(R.id.idFinanzas);
+        Toast.makeText(this, "Sesión activa: " + profeActual, Toast.LENGTH_SHORT).show();
 
-        // 2. Acciones de las pantallas (viajes reales)
-        botonRegistrar.setOnClickListener(v -> {
-            Intent intencion = new Intent(MainActivity.this, RegistroActivity.class);
-            startActivity(intencion);
-        });
+        // 2. Enlazar con los ID EXACTOS de tu activity_main.xml
+        Button btnRegistro = findViewById(R.id.idRegistrar);
+        Button btnVerClientes = findViewById(R.id.idVer);
+        Button btnRenovar = findViewById(R.id.idRenovar);
+        Button btnAvisos = findViewById(R.id.idAvisos);
+        Button btnEliminar = findViewById(R.id.idEliminar);
+        Button btnFinanzas = findViewById(R.id.idFinanzas);
+        Button btnCerrarSesion = findViewById(R.id.idCerrarSesion); // NUEVO BOTÓN
 
-        botonVer.setOnClickListener(v -> {
-            Intent intencion = new Intent(MainActivity.this, VerClientesActivity.class);
-            startActivity(intencion);
-        });
+        // 3. Restricción de seguridad: Si no es Paulo, ocultamos el botón de Finanzas
+        boolean esAdmin = profeActual.equalsIgnoreCase("Paulo");
+        if (!esAdmin) {
+            if (btnFinanzas != null) {
+                btnFinanzas.setVisibility(View.GONE);
+            }
+        }
 
-        botonRenovar.setOnClickListener(v -> {
-            Intent intencion = new Intent(MainActivity.this, RenovarActivity.class);
-            startActivity(intencion);
-        });
+        // 4. Configurar clics de navegación
+        if (btnRegistro != null) {
+            btnRegistro.setOnClickListener(v -> abrirPantalla(RegistroActivity.class));
+        }
+        if (btnVerClientes != null) {
+            btnVerClientes.setOnClickListener(v -> abrirPantalla(VerClientesActivity.class));
+        }
+        if (btnRenovar != null) {
+            btnRenovar.setOnClickListener(v -> abrirPantalla(RenovarActivity.class));
+        }
+        if (btnAvisos != null) {
+            btnAvisos.setOnClickListener(v -> abrirPantalla(AvisosActivity.class));
+        }
+        if (btnEliminar != null) {
+            btnEliminar.setOnClickListener(v -> abrirPantalla(EliminarActivity.class));
+        }
+        if (btnFinanzas != null) {
+            btnFinanzas.setOnClickListener(v -> abrirPantalla(FinanzasActivity.class));
+        }
 
-        botonEliminar.setOnClickListener(v -> {
-            Intent intencion = new Intent(MainActivity.this, EliminarActivity.class);
-            startActivity(intencion);
-        });
+        // Clic para CERRAR SESIÓN
+        if (btnCerrarSesion != null) {
+            btnCerrarSesion.setOnClickListener(v -> {
+                // Te devuelve a la pantalla de Login (cambia LoginActivity.class si tu pantalla principal se llama diferente)
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
 
-        botonAvisos.setOnClickListener(v -> {
-            Intent intencion = new Intent(MainActivity.this, AvisosActivity.class);
-            startActivity(intencion);
-        });
+                // Estas banderas borran el historial para que si le dan al botón físico de "Atrás" del celular no vuelvan al menú principal
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish(); // Cierra esta activity
+            });
+        }
+    }
 
-        // 3. Viaje a la pantalla maestra de la plata
-        botonFinanzas.setOnClickListener(v -> {
-            Intent intencion = new Intent(MainActivity.this, FinanzasActivity.class);
-            startActivity(intencion);
-        });
+    private void abrirPantalla(Class<?> claseDestino) {
+        Intent intent = new Intent(MainActivity.this, claseDestino);
+        intent.putExtra("PROFE_ACTUAL", profeActual);
+        startActivity(intent);
     }
 }

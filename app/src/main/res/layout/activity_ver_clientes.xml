@@ -1,53 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#000000"
+    android:padding="24dp">
 
-    <!-- Título -->
+    <!-- Título Fijo Arriba -->
     <TextView
         android:id="@+id/tvTituloVer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="👥 LISTA DE CLIENTES"
+        android:text="LISTA DE CLIENTES"
+        android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="26sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- EL INTERRUPTOR MÁGICO PARA VER LA LISTA GENERAL -->
+    <Switch
+        android:id="@+id/switchVerLista"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTituloVer"
+        android:text="Modo: Mis Clientes (Personalizados)"
+        android:textColor="#B71C1C"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"
+        android:thumbTint="#FFFFFF"
+        android:trackTint="#424242"/>
 
     <!-- Mensaje de Estado / Cargando -->
     <TextView
         android:id="@+id/tvEstado"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/switchVerLista"
         android:text="⏳ Descargando base de datos..."
-        android:textColor="#90CAF9"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="#AAAAAA"
+        android:textAlignment="center"
+        android:layout_marginBottom="16dp"
+        android:visibility="visible"/>
 
-    <!-- Lista Deslizable (ScrollView) -->
+    <!-- Botón de Reconectar -->
+    <Button
+        android:id="@+id/btnReconectar"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_below="@id/tvEstado"
+        android:text="🔄 REINTENTAR CONEXIÓN"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:backgroundTint="#B71C1C"
+        app:cornerRadius="4dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"/>
+
+    <!-- Lista Deslizable en el centro -->
     <ScrollView
-        android:id="@+id/scrollClientes"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginHorizontal="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnVolverDesdeLista"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloVer">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/btnReconectar"
+        android:layout_above="@id/btnVolverDesdeLista"
+        android:layout_marginBottom="16dp">
 
-        <!-- Aquí adentro inyectaremos a los clientes desde Java -->
         <LinearLayout
             android:id="@+id/contenedorClientes"
             android:layout_width="match_parent"
@@ -55,21 +76,16 @@
             android:orientation="vertical" />
     </ScrollView>
 
-    <!-- Botón Volver al Menú -->
+    <!-- Botón Fijo Abajo -->
     <Button
         android:id="@+id/btnVolverDesdeLista"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:text="⬅ Volver al Menú"
-        android:textColor="#90CAF9"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:text="VOLVER AL MENÚ"
+        android:textColor="#FFFFFF"
         android:textStyle="bold"
-        app:backgroundTint="#000000"
-        app:cornerRadius="50dp"
-        app:strokeColor="#555555"
-        app:strokeWidth="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:backgroundTint="#424242"
+        app:cornerRadius="4dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
