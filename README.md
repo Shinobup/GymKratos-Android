@@ -1,4 +1,4 @@
-# 🏋️‍♂️ Gym Kratos - Sistema de Gestión Móvil
+# 🏋️‍♂️️ Gym Kratos - Sistema de Gestión Móvil (V2.0)
 
 Aplicación nativa para Android desarrollada para la gestión administrativa, financiera y de clientes de un gimnasio real. El sistema permite el control de membresías, automatización de cobros, análisis de ingresos en tiempo real y gestión multi-perfil.
 
