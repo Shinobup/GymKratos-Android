@@ -28,7 +28,8 @@ Aplicación nativa para Android desarrollada para la gestión administrativa, fi
 <img width="250" alt="Screenshot_20260929_174940" src="https://github.com/user-attachments/assets/08fff3aa-523f-4957-95c7-d28689af5f43" />
 <img width="250" alt="Screenshot_20260929_175017" src="https://github.com/user-attachments/assets/5e49f790-4072-4c05-a3f4-12ef71a3782b" />
 <img width="250" alt="Screenshot_20260929_175043" src="https://github.com/user-attachments/assets/fd4ff340-f30c-4d81-ae14-19528166f9eb" />
-<img width="250" alt="Screenshot_20260929_175043" src="https://github.com/user-attachments/assets/1450ec46-39b7-4c63-8b6e-462e6cd66f59" />
+<img width="250" alt="Screenshot_20260929_175106" src="https://github.com/user-attachments/assets/ebf3864a-fa40-49d0-872b-d184e7f4994b" />
+
 
 ---
 *Proyecto de software desarrollado por Aliro Cuevas Silva.*
